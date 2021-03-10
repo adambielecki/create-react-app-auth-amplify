@@ -290,41 +290,41 @@ function viewCarousel(albumName) {
 // }
 
 function viewBrochure(albumName, brochureName) {
-  var albumPhotosKey = encodeURIComponent(albumName);
-  s3.listObjects({ Prefix: albumName + "/Brochures/" + brochureName + "/" }, function (err, data) {
-    if (err) {
-      return alert("There was an error viewing your album: " + err.message);
-    }
-    // 'this' references the AWS.Response instance that represents the response
-    var href = this.request.httpRequest.endpoint.href;
-    var bucketUrl = href + bucketName + "/";
+//   var albumPhotosKey = encodeURIComponent(albumName);
+//   s3.listObjects({ Prefix: albumName + "/Brochures/" + brochureName + "/" }, function (err, data) {
+//     if (err) {
+//       return alert("There was an error viewing your album: " + err.message);
+//     }
+//     // 'this' references the AWS.Response instance that represents the response
+//     var href = this.request.httpRequest.endpoint.href;
+//     var bucketUrl = href + bucketName + "/";
 
-    var photos = data.Contents.map(function (photo) {
-      var mainFolderPath = companyId + "/Brochures/";
-      var photoKey = photo.Key;
-      var photoUrl = bucketUrl + encodeURIComponent(photoKey);
+//     var photos = data.Contents.map(function (photo) {
+//       var mainFolderPath = companyId + "/Brochures/";
+//       var photoKey = photo.Key;
+//       var photoUrl = bucketUrl + encodeURIComponent(photoKey);
 
-      if (mainFolderPath == photoKey) {
-        return;
-      }
+//       if (mainFolderPath == photoKey) {
+//         return;
+//       }
 
-      // return getHtml([
-      //   "<div class='col-sm-3'>",
-      //   "<div>",
-      //   '<img height=90 width=160 src="' + photoUrl + '"/>',
-      //   "</div>",
-      //  "</div>"
-      // ]);
-    });
+//       // return getHtml([
+//       //   "<div class='col-sm-3'>",
+//       //   "<div>",
+//       //   '<img height=90 width=160 src="' + photoUrl + '"/>',
+//       //   "</div>",
+//       //  "</div>"
+//       // ]);
+//     });
     
-    var htmlTemplate = [
-      "<div class='row'>",
-      photos,
-      "</div>",
-    ];
+//     var htmlTemplate = [
+//       "<div class='row'>",
+//       photos,
+//       "</div>",
+//     ];
 
-    document.getElementById("brochures_" + brochureName).innerHTML = getHtml(htmlTemplate);
-  });
+//     document.getElementById("brochures_" + brochureName).innerHTML = getHtml(htmlTemplate);
+//   });
 }
 
 function viewMovies(albumName) {
@@ -391,23 +391,7 @@ const message = "Are you sure?";
   }
 }
 
-function deleteBrochure(albumName, photoKey) {
-  var dialogOutput = window.confirm("Are you sure?");
 
-  if (dialogOutput == true) {
-    s3.deleteObject({ Key: photoKey }, function (err, data) {
-      if (err) {
-        return alert("There was an error deleting your photo: ", err.message);
-      }
-      alert("Successfully deleted photo.");
-      viewBrochure(albumName, 1);
-      viewBrochure(albumName, 2);
-    });
-  }
-  else {
-    return false;
-  }
-}
 
 function deleteVideo(key) {
   var dialogOutput = window.confirm("Are you sure?");
@@ -448,11 +432,9 @@ export default function Accordion() {
                     data-bs-parent="#accordionExample">
                     <div className="accordion-body">
                         <h5>Please add image in jpg format. Recommended ratio 16:9.</h5>
-                        <p>
                             <input className="form-control form-control-lg" id="photoupload" type="file" accept="image/*.jpg" />
                             <h4>Currently uploaded images for carousel</h4>
                             <div id="carousel-images"></div>
-                        </p>
                     </div>
                 </div>
 
@@ -468,11 +450,9 @@ export default function Accordion() {
                     data-bs-parent="#accordionExample">
                     <div className="accordion-body">
                         <h5>Please add video in mp4 format. Recommended ratio 16:9.</h5>
-                        <p>
                             <input className="form-control form-control-lg" id="videoupload" type="file" accept="video/*.mp4" />
                             <h4>Currently uploaded movies</h4>
                             <div id="videos"></div>
-                        </p>
                     </div>
                 </div>
 
@@ -488,25 +468,16 @@ export default function Accordion() {
                     data-bs-parent="#accordionExample">
                     <div className="accordion-body">
                         <h5>Please add image in jpg format. Recommended ratio 16:9.</h5>
-                        <p>
+                  
                             <h6>Presentation 1</h6>
 
-                            <input className="form-control form-control-lg" id="brochureupload_1" type="file" accept="image/*.jpg" />
-                            <h4>Currently uploaded</h4>
-                            <div id="brochures_1">
-                            
-
-                            </div>
-                            <div className="row">
-                            <Brochure/>
-                            </div>
-                        </p>
-                        <p>
+                        <Brochure number="1" />
                             <h6>Presentation 2</h6>
-                            <input className="form-control form-control-lg" id="brochureupload_2" type="file" accept="image/*.jpg" />
+                            {/* <input className="form-control form-control-lg" id="brochureupload_2" type="file" accept="image/*.jpg" />
                             <h4>Currently uploaded</h4>
-                            <div id="brochures_2"></div>
-                        </p>
+                            <div id="brochures_2"></div> */}
+                        <Brochure number="2" />
+                        
                     </div>
 
                 </div>
@@ -522,11 +493,9 @@ export default function Accordion() {
                         data-bs-parent="#accordionExample">
                         <div className="accordion-body">
                             <h5>Upload your company logo. Accepted formats (jpg,png)</h5>
-                            <p>
                                 <input className="form-control form-control-lg" id="logoupload" type="file" />
                                 <h4>Currently uploaded logo</h4>
                                 <div id="logo-section"></div>
-                            </p>
                         </div>
                     </div>
 
