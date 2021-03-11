@@ -26,13 +26,45 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <title>React App</title>
+    <title>Rise - Content Managent System</title>
+
+    <style>
+      .image {
+        float: left;
+        display: block;
+      }
+  
+      .uploading {
+        display: block;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        z-index: 500000;
+        background: rgba(0, 0, 0, 0.2);
+      }
+  
+      .uploadingValue {
+        position: absolute;
+        top: 50%;
+        left: 40%;
+        color: aqua;
+        font-size: 40pt;
+      }
+    </style>
+
   </head>
   <body>
+    <div class="uploading" id="uploading" style="display:none">
+      <span class="uploadingValue">
+        Uploading... <strong id="percentValue">2</strong> %
+      </span>
+    </div>
     <noscript>
       You need to enable JavaScript to run this app.
     </noscript>
-    <div id="root"></div>
+    <div id="root">
+      
+    </div>
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.

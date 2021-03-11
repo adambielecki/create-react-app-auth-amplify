@@ -3,7 +3,7 @@ import * as awsConstants from './AwsSettings'
 
 // we will get companyId from user profile in next release
 
-class Brochure extends Component {
+class Logo extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -17,17 +17,18 @@ class Brochure extends Component {
         this.setState({ selectedFile: ev.target.files[0] });
     }
 
-    uploadBrochure = () => {
+    uploadLogo = () => {
         if (this.state.selectedFile) {
             const $this = this;
+            const fileName = this.state.selectedFile.name;
 
-            var file = this.state.selectedFile;
-            var fileName = file.name;
-            var filePath = awsConstants.companyId + '/Brochures/' + $this.state.brochureNumber + "/" + fileName;
+            var lastIndex = fileName.lastIndexOf(".");
+            var extension = fileName.substring(lastIndex, fileName.length);
+            var filePath = awsConstants.companyId + '/Logo/logo' + extension;
 
             awsConstants.s3.upload({
                 Key: filePath,
-                Body: file
+                Body: this.state.selectedFile
             }, function (err, data) {
                 if (err) {
                     //reject('error');
@@ -35,7 +36,7 @@ class Brochure extends Component {
 
                 } else {
                     awsConstants.HideLoading()
-                    $this.LoadBrochures();
+                    $this.LoadLogo();
                 }
 
             }).on('httpUploadProgress', function (progress) {
@@ -56,7 +57,7 @@ class Brochure extends Component {
                     return alert("There was an error deleting your photo: ", err.message);
                 }
                 //alert("Successfully deleted photo.");
-                $this.LoadBrochures();
+                $this.LoadLogo();
             });
         }
         else {
@@ -64,9 +65,10 @@ class Brochure extends Component {
         }
     }
 
-    LoadBrochures = () => {
+    LoadLogo = () => {
         const $this = this;
-        awsConstants.s3.listObjects({ Prefix: awsConstants.companyId + "/Brochures/" + $this.state.brochureNumber + "/" }, function (err, data) {
+        const folderPath = awsConstants.companyId + "/Logo/";
+        awsConstants.s3.listObjects({ Prefix: folderPath }, function (err, data) {
             if (err) {
                 return alert("There was an error viewing your album: " + err.message);
             }
@@ -76,11 +78,10 @@ class Brochure extends Component {
 
             var urls = [];
             data.Contents.map(function (photo) {
-                var mainFolderPath = awsConstants.companyId + "/Brochures/";
                 var photoKey = photo.Key;
                 var photoUrl = bucketUrl + encodeURIComponent(photoKey);
 
-                if (mainFolderPath == photoKey) {
+                if (folderPath == photoKey) {
                     return;
                 }
 
@@ -91,7 +92,7 @@ class Brochure extends Component {
     }
 
     componentDidMount() {
-        this.LoadBrochures();
+        this.LoadLogo();
     }
     render() {
         return (
@@ -99,7 +100,7 @@ class Brochure extends Component {
                 <div className="col-sm-3">
                 <div className="input-group mb-3">
                         <input onChange={this.onFileChange} type="file" className="form-control" aria-label="Upload"/>
-                        <button onClick={this.uploadBrochure} className="btn btn-outline-secondary" type="button">Upload</button>
+                        <button onClick={this.uploadLogo} className="btn btn-outline-secondary" type="button">Upload</button>
                 </div>
                 </div>
                 
@@ -116,4 +117,4 @@ class Brochure extends Component {
     }
 }
 
-export default Brochure
+export default Logo

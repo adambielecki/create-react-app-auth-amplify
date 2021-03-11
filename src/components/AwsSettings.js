@@ -21,3 +21,18 @@ export const s3 = new AWS.S3({
 // we will get companyId from user profile in next release
 
 export const companyId = urlParams.get('companyId');
+
+export function ShowLoading(progress) {
+    document.getElementById("uploading").style.display = "block";
+    var uploaded = parseInt((progress.loaded * 100) / progress.total);
+    document.getElementById("percentValue").innerHTML = uploaded;
+}
+
+export function HideLoading() {
+    document.getElementById("uploading").style.display = "none";
+}
+
+export function GetFileExtension(fileName) {
+    var lastIndex = fileName.lastIndexOf(".");
+    return fileName.substring(lastIndex, fileName.length);
+}

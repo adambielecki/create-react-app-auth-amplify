@@ -1,9 +1,12 @@
 import React, { Component } from 'react'
 import * as awsConstants from './AwsSettings'
+import VideoThumbnail from 'react-video-thumbnail'; // use npm published version
+import { render } from 'react-dom';
+
 
 // we will get companyId from user profile in next release
 
-class Brochure extends Component {
+class Video extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -17,17 +20,22 @@ class Brochure extends Component {
         this.setState({ selectedFile: ev.target.files[0] });
     }
 
-    uploadBrochure = () => {
+    uploadVideo = () => {
         if (this.state.selectedFile) {
             const $this = this;
+            const fileName = this.state.selectedFile.name;
 
-            var file = this.state.selectedFile;
-            var fileName = file.name;
-            var filePath = awsConstants.companyId + '/Brochures/' + $this.state.brochureNumber + "/" + fileName;
+            console.log(awsConstants.GetFileExtension(fileName));
+            if(awsConstants.GetFileExtension(fileName) !== ".mp4") {
+                alert("Please upload video in mp4 format.")
+                return;
+            }
+
+            var filePath = awsConstants.companyId + '/Videos/' + fileName;
 
             awsConstants.s3.upload({
                 Key: filePath,
-                Body: file
+                Body: this.state.selectedFile
             }, function (err, data) {
                 if (err) {
                     //reject('error');
@@ -35,7 +43,7 @@ class Brochure extends Component {
 
                 } else {
                     awsConstants.HideLoading()
-                    $this.LoadBrochures();
+                    $this.LoadVideos();
                 }
 
             }).on('httpUploadProgress', function (progress) {
@@ -44,6 +52,47 @@ class Brochure extends Component {
                 console.log(progress);
             });
         };
+    }
+
+    LoadVideos = () => {
+        const $this = this;
+        const folderPath = awsConstants.companyId + "/Videos/";
+        awsConstants.s3.listObjects({ Prefix: folderPath }, function (err, data) {
+            if (err) {
+                return alert("There was an error viewing your album: " + err.message);
+            }
+            // 'this' references the AWS.Response instance that represents the response
+            var href = this.request.httpRequest.endpoint.href;
+            var bucketUrl = href + awsConstants.bucketName + "/";
+
+            var urls = [];
+            data.Contents.map(function (photo) {
+                var photoKey = photo.Key;
+                var photoUrl = bucketUrl + encodeURIComponent(photoKey);
+
+                if (folderPath == photoKey) {
+                    return;
+                }
+
+                urls.push({ key: photoKey, url: photoUrl });
+            });
+            $this.setState({ brochures: urls.map(url => url) });
+        });
+    }
+
+     RenderImage = (url) => {
+        return <VideoThumbnail
+    videoUrl={url}
+    thumbnailHandler={(thumbnail) => console.log(thumbnail)}
+    width={290}
+    height={165}
+    cors={false}
+    />
+    }
+
+    componentDidMount() {
+        this.LoadVideos();
+        
     }
 
     deleteS3Object = (key) => {
@@ -56,7 +105,7 @@ class Brochure extends Component {
                     return alert("There was an error deleting your photo: ", err.message);
                 }
                 //alert("Successfully deleted photo.");
-                $this.LoadBrochures();
+                $this.LoadVideos();
             });
         }
         else {
@@ -64,49 +113,22 @@ class Brochure extends Component {
         }
     }
 
-    LoadBrochures = () => {
-        const $this = this;
-        awsConstants.s3.listObjects({ Prefix: awsConstants.companyId + "/Brochures/" + $this.state.brochureNumber + "/" }, function (err, data) {
-            if (err) {
-                return alert("There was an error viewing your album: " + err.message);
-            }
-            // 'this' references the AWS.Response instance that represents the response
-            var href = this.request.httpRequest.endpoint.href;
-            var bucketUrl = href + awsConstants.bucketName + "/";
-
-            var urls = [];
-            data.Contents.map(function (photo) {
-                var mainFolderPath = awsConstants.companyId + "/Brochures/";
-                var photoKey = photo.Key;
-                var photoUrl = bucketUrl + encodeURIComponent(photoKey);
-
-                if (mainFolderPath == photoKey) {
-                    return;
-                }
-
-                urls.push({ key: photoKey, url: photoUrl });
-            });
-            $this.setState({ brochures: urls.map(url => url) });
-        });
-    }
-
-    componentDidMount() {
-        this.LoadBrochures();
-    }
     render() {
         return (
             <div>
                 <div className="col-sm-3">
                 <div className="input-group mb-3">
                         <input onChange={this.onFileChange} type="file" className="form-control" aria-label="Upload"/>
-                        <button onClick={this.uploadBrochure} className="btn btn-outline-secondary" type="button">Upload</button>
+                        <button onClick={this.uploadVideo} className="btn btn-outline-secondary" type="button">Upload</button>
                 </div>
                 </div>
                 
                 <div className="row">
 
-                    {this.state.brochures.map(url => <div key={url.key} className='col-sm-2'>
-                        <img className="img-fluid" src={url.url} />
+                    {this.state.brochures.map(url => 
+                    
+                    <div key={url.key} className='col-sm-2'>
+                        <div className="img-fluid" style={{height:165}}>{this.RenderImage(url.url)}</div>
                         <button type="button" className="btn btn-danger" onClick={this.deleteS3Object.bind(this, url.key)}>DELETE</button>
                     </div>
                     )}
@@ -116,4 +138,4 @@ class Brochure extends Component {
     }
 }
 
-export default Brochure
+export default Video

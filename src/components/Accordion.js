@@ -1,6 +1,9 @@
 import React from 'react'
 import AWS from 'aws-sdk';
 import Brochure from './Brochure'
+import Logo from './Logo'
+import Video from './Videos'
+
 import { render } from 'react-dom';
 
 var bucketName = "rise-carousel";
@@ -24,127 +27,56 @@ var s3 = new AWS.S3({
   params: { Bucket: bucketName }
 });
 
-function EventListeners()
-{
+// function EventListeners()
+// {
 
-    document.getElementById('photoupload').addEventListener('change', () => {
-        const input = document.getElementById('photoupload').files[0];
-        uploadCarouselImage(input);
-      });
+//     document.getElementById('photoupload').addEventListener('change', () => {
+//         const input = document.getElementById('photoupload').files[0];
+//         uploadCarouselImage(input);
+//       });
       
-      document.getElementById('videoupload').addEventListener('change', () => {
-        var input = document.getElementById('videoupload').files[0];
-        uploadVideo(input);
-      });
+//       document.getElementById('videoupload').addEventListener('change', () => {
+//         var input = document.getElementById('videoupload').files[0];
+//         uploadVideo(input);
+//       });
       
-      document.getElementById('brochureupload_1').addEventListener('change', () => {
-        var input = document.getElementById('brochureupload_1').files[0];
-        uploadBrochure(input, 1);
-      });
       
-      document.getElementById('brochureupload_2').addEventListener('change', () => {
-        var input = document.getElementById('brochureupload_2').files[0];
-        uploadBrochure(input, 2);
-      });
-      
-      document.getElementById('logoupload').addEventListener('change', () => {
-        var input = document.getElementById('logoupload').files[0];
-        uploadLogo(input);
-      });
-}
+//       document.getElementById('logoupload').addEventListener('change', () => {
+//         var input = document.getElementById('logoupload').files[0];
+//         uploadLogo(input);
+//       });
+// }
 
-function uploadBrochure(file, brochure) {
 
-  console.log(file);
-  var fileName = file.name;
-  var filePath = companyId + '/Brochures/' + brochure + "/" + fileName;
+// function uploadVideo(file) {
 
-  s3.upload({
-    Key: filePath,
-    Body: file
-  }, function (err, data) {
-    if (err) {
-      //reject('error');
-      console.error(JSON.stringify(err));
+//   console.log(file);
+//   var fileName = file.name;
+//   var filePath = companyId + '/Videos/' + fileName;
 
-    } else {
-      alert('Successfully Uploaded!');
-      document.getElementById("uploading").style.display = "none";
+//   s3.upload({
+//     Key: filePath,
+//     Body: file
+//   }, function (err, data) {
+//     if (err) {
+//       //reject('error');
+//       console.error(JSON.stringify(err));
 
-      viewBrochure(companyId, brochure);
-    }
+//     } else {
+//       alert('Successfully Uploaded!');
+//       document.getElementById("uploading").style.display = "none";
 
-  }).on('httpUploadProgress', function (progress) {
-    document.getElementById("uploading").style.display = "block";
-    var uploaded = parseInt((progress.loaded * 100) / progress.total);
-    document.getElementById("percentValue").innerHTML = uploaded;
-    //$("progress").attr('value', uploaded);
-    console.log(progress);
-  });
-};
+//       viewMovies(companyId);
+//     }
 
-function uploadLogo(file) {
-
-  console.log(file);
-  var fileName = file.name;
-
-  var lastIndex = fileName.lastIndexOf(".");
-  var extension = fileName.substring(lastIndex, fileName.length);
-  var filePath = companyId + '/Logo/logo' + extension;
-
-  s3.upload({
-    Key: filePath,
-    Body: file
-  }, function (err, data) {
-    if (err) {
-      //reject('error');
-      console.error(JSON.stringify(err));
-
-    } else {
-      alert('Successfully Uploaded!');
-      document.getElementById("uploading").style.display = "none";
-
-      viewLogo(companyId);
-    }
-
-  }).on('httpUploadProgress', function (progress) {
-    document.getElementById("uploading").style.display = "block";
-    var uploaded = parseInt((progress.loaded * 100) / progress.total);
-    document.getElementById("percentValue").innerHTML = uploaded;
-    //$("progress").attr('value', uploaded);
-    console.log(progress);
-  });
-};
-
-function uploadVideo(file) {
-
-  console.log(file);
-  var fileName = file.name;
-  var filePath = companyId + '/Videos/' + fileName;
-
-  s3.upload({
-    Key: filePath,
-    Body: file
-  }, function (err, data) {
-    if (err) {
-      //reject('error');
-      console.error(JSON.stringify(err));
-
-    } else {
-      alert('Successfully Uploaded!');
-      document.getElementById("uploading").style.display = "none";
-
-      viewMovies(companyId);
-    }
-
-  }).on('httpUploadProgress', function (progress) {
-    document.getElementById("uploading").style.display = "block";
-    var uploaded = parseInt((progress.loaded * 100) / progress.total);
-    document.getElementById("percentValue").innerHTML = uploaded;
-    //$("progress").attr('value', uploaded);
-    console.log(progress);
-  });
-};
+//   }).on('httpUploadProgress', function (progress) {
+//     document.getElementById("uploading").style.display = "block";
+//     var uploaded = parseInt((progress.loaded * 100) / progress.total);
+//     document.getElementById("percentValue").innerHTML = uploaded;
+//     //$("progress").attr('value', uploaded);
+//     console.log(progress);
+//   });
+// };
 
 function uploadCarouselImage(file) {
 
@@ -186,45 +118,6 @@ function setImageCorrectRatio(url, elementId){
   img.src = url;
 }
 
-function viewLogo(albumName) {
-  var albumPhotosKey = encodeURIComponent(albumName);
-  s3.listObjects({ Prefix: albumName + "/Logo/" }, function (err, data) {
-    if (err) {
-      return alert("There was an error viewing your logo: " + err.message);
-    }
-    // 'this' references the AWS.Response instance that represents the response
-    var href = this.request.httpRequest.endpoint.href;
-    var bucketUrl = href + bucketName + "/";
-
-    var photos = data.Contents.map(function (photo) {
-      var mainFolderPath = companyId + "/Logo/";
-      var photoKey = photo.Key;
-      var photoUrl = bucketUrl + encodeURIComponent(photoKey);
-      setImageCorrectRatio(photoUrl, photoUrl);
-      
-      var widthWithCorrectAspectRatio;
-      if (mainFolderPath == photoKey) {
-        return;
-      }
-
-      return getHtml([
-        "<div class='col-sm-3'>",
-        "<div>",
-        '<img id=' + photoUrl + ' height=90 width=160 src="' + photoUrl + '"/>',
-      ]);
-    });
-    var message = photos.length
-      ? "<p></p>"
-      : "<p>Please upload logo image.</p>";
-    var htmlTemplate = [
-      message,
-      "<div class='row'>",
-      getHtml(photos),
-      "</div>",
-    ];
-    document.getElementById("logo-section").innerHTML = getHtml(htmlTemplate);
-  });
-}
 
 function viewCarousel(albumName) {
   var albumPhotosKey = encodeURIComponent(albumName);
@@ -278,102 +171,6 @@ function viewCarousel(albumName) {
   });
 }
 
-// function GenerateImage(photoUrl) {
-//     console.log(photoUrl);
-//   return (
-//     <div class='col-sm-3'>
-//         <div>
-//         <img height='90' width='160' src={photoUrl}/>
-//         </div>
-//        </div>
-//   )
-// }
-
-function viewBrochure(albumName, brochureName) {
-//   var albumPhotosKey = encodeURIComponent(albumName);
-//   s3.listObjects({ Prefix: albumName + "/Brochures/" + brochureName + "/" }, function (err, data) {
-//     if (err) {
-//       return alert("There was an error viewing your album: " + err.message);
-//     }
-//     // 'this' references the AWS.Response instance that represents the response
-//     var href = this.request.httpRequest.endpoint.href;
-//     var bucketUrl = href + bucketName + "/";
-
-//     var photos = data.Contents.map(function (photo) {
-//       var mainFolderPath = companyId + "/Brochures/";
-//       var photoKey = photo.Key;
-//       var photoUrl = bucketUrl + encodeURIComponent(photoKey);
-
-//       if (mainFolderPath == photoKey) {
-//         return;
-//       }
-
-//       // return getHtml([
-//       //   "<div class='col-sm-3'>",
-//       //   "<div>",
-//       //   '<img height=90 width=160 src="' + photoUrl + '"/>',
-//       //   "</div>",
-//       //  "</div>"
-//       // ]);
-//     });
-    
-//     var htmlTemplate = [
-//       "<div class='row'>",
-//       photos,
-//       "</div>",
-//     ];
-
-//     document.getElementById("brochures_" + brochureName).innerHTML = getHtml(htmlTemplate);
-//   });
-}
-
-function viewMovies(albumName) {
-  var mainFolderPath = companyId + "/Videos/";
-
-  var albumKey = encodeURIComponent(albumName) + "/";
-  s3.listObjects({ Prefix: albumName + "/Videos/" }, function (err, data) {
-    if (err) {
-      return alert("There was an error viewing your album: " + err.message);
-    }
-    // 'this' references the AWS.Response instance that represents the response
-    var href = this.request.httpRequest.endpoint.href;
-    var bucketUrl = href + bucketName + "/";
-
-    var photos = data.Contents.map(function (photo) {
-      var key = photo.Key;
-      var photoUrl = bucketUrl + encodeURIComponent(key);
-
-      if (mainFolderPath == key) {
-        return;
-      }
-
-      return getHtml([
-        "<div class='col-sm-3'>",
-        "<div >",
-        "<span onclick=\"deleteVideo('" +
-        key +
-        "')\">",
-        "DELETE",
-        "</br></span>",
-        "<span>",
-        key.replace(albumKey, ""),
-        "</span>",
-        "</div>",
-        "</div>"
-      ]);
-    });
-    var message = photos.length
-      ? "<p>Click DELETE to remove video.</p>"
-      : "<p>You do not have any videos uploaded.</p>";
-    var htmlTemplate = [
-      message,
-      "<div class='row'>",
-      getHtml(photos),
-      "</div>",
-    ];
-    document.getElementById("videos").innerHTML = getHtml(htmlTemplate);
-  });
-}
 
 function deletePhoto(albumName, photoKey) {
 const message = "Are you sure?";
@@ -392,30 +189,8 @@ const message = "Are you sure?";
 }
 
 
-
-function deleteVideo(key) {
-  var dialogOutput = window.confirm("Are you sure?");
-
-  if (dialogOutput == true) {
-    s3.deleteObject({ Key: key }, function (err, data) {
-      if (err) {
-        return alert("There was an error deleting your video: ", err.message);
-      }
-      alert("Successfully deleted video.");
-      viewMovies(companyId);
-    });
-  }
-  else {
-    return false;
-  }
-}
-
 if (companyId) {
   viewCarousel(companyId);
-  viewMovies(companyId);
-  viewBrochure(companyId, 1);
-  viewBrochure(companyId, 2);
-  viewLogo(companyId);
 }
 
 export default function Accordion() {
@@ -446,13 +221,12 @@ export default function Accordion() {
                         Upload videos
           </button>
                 </h2>
-                <div id="collapseTwo" className="accordion-collapse" aria-labelledby="videos-accordion"
+                <div id="collapseTwo" className="accordion-collapse collapse" aria-labelledby="videos-accordion"
                     data-bs-parent="#accordionExample">
                     <div className="accordion-body">
                         <h5>Please add video in mp4 format. Recommended ratio 16:9.</h5>
-                            <input className="form-control form-control-lg" id="videoupload" type="file" accept="video/*.mp4" />
-                            <h4>Currently uploaded movies</h4>
-                            <div id="videos"></div>
+                          
+                            <Video/>
                     </div>
                 </div>
 
@@ -464,18 +238,16 @@ export default function Accordion() {
                         Upload presentation images
           </button>
                 </h2>
-                <div id="collapseThree" className="accordion-collapse" aria-labelledby="presentation-accordion"
+                <div id="collapseThree" className="accordion-collapse collapse" aria-labelledby="presentation-accordion"
                     data-bs-parent="#accordionExample">
                     <div className="accordion-body">
                         <h5>Please add image in jpg format. Recommended ratio 16:9.</h5>
                   
-                            <h6>Presentation 1</h6>
+                            <h6 className="mt-3 mb-3">Presentation 1</h6>
 
                         <Brochure number="1" />
-                            <h6>Presentation 2</h6>
-                            {/* <input className="form-control form-control-lg" id="brochureupload_2" type="file" accept="image/*.jpg" />
-                            <h4>Currently uploaded</h4>
-                            <div id="brochures_2"></div> */}
+                            <h6 className="mt-3 mb-3">Presentation 2</h6>
+                            
                         <Brochure number="2" />
                         
                     </div>
@@ -489,13 +261,12 @@ export default function Accordion() {
                             Upload your company logo.
           </button>
                     </h2>
-                    <div id="logo" className="accordion-collapse" aria-labelledby="logo-accordion"
+                    <div id="logo" className="accordion-collapse collapse" aria-labelledby="logo-accordion"
                         data-bs-parent="#accordionExample">
                         <div className="accordion-body">
                             <h5>Upload your company logo. Accepted formats (jpg,png)</h5>
-                                <input className="form-control form-control-lg" id="logoupload" type="file" />
-                                <h4>Currently uploaded logo</h4>
-                                <div id="logo-section"></div>
+
+                                <Logo />
                         </div>
                     </div>
 
