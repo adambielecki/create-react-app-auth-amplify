@@ -6,37 +6,33 @@ import { render } from 'react-dom';
 
 // we will get companyId from user profile in next release
 
-class Video extends Component {
+class Carousel extends Component {
     constructor(props) {
         super(props);
-
         this.state = {
             brochures: [],
             brochureNumber: props.number,
             selectedFile: null,
             companyId: props.userSession.licenses[0]
         };
-
-        console.log("Video props " + JSON.stringify(props));
     }
-
 
     onFileChange = ev => {
         this.setState({ selectedFile: ev.target.files[0] });
     }
 
-    uploadVideo = () => {
+    uploadCarousel = () => {
         if (this.state.selectedFile) {
             const $this = this;
             const fileName = this.state.selectedFile.name;
 
             console.log(awsConstants.GetFileExtension(fileName));
-            if(awsConstants.GetFileExtension(fileName) !== ".mp4") {
-                alert("Please upload video in mp4 format.")
+            if(awsConstants.GetFileExtension(fileName) !== ".jpg") {
+                alert("Please upload image in jpg format.")
                 return;
             }
 
-            var filePath = $this.state.companyId + '/Videos/' + fileName;
+            var filePath = awsConstants.cmsInfo.companyId + '/Carousel/' + fileName;
 
             awsConstants.s3.upload({
                 Key: filePath,
@@ -48,7 +44,7 @@ class Video extends Component {
 
                 } else {
                     awsConstants.HideLoading()
-                    $this.LoadVideos();
+                    $this.LoadCarousel();
                 }
 
             }).on('httpUploadProgress', function (progress) {
@@ -59,9 +55,9 @@ class Video extends Component {
         };
     }
 
-    LoadVideos = () => {
+    LoadCarousel = () => {
         const $this = this;
-        const folderPath = $this.state.companyId  + "/Videos/";
+        const folderPath = $this.state.companyId + "/Carousel/";
         awsConstants.s3.listObjects({ Prefix: folderPath }, function (err, data) {
             if (err) {
                 return alert("There was an error viewing your album: " + err.message);
@@ -85,21 +81,11 @@ class Video extends Component {
         });
     }
 
-     RenderImage = (url) => {
-        return <VideoThumbnail
-    videoUrl={url}
-    thumbnailHandler={(thumbnail) => console.log(thumbnail)}
-    width={290}
-    height={165}
-    cors={false}
-    />
-    }
-
     componentDidMount() {
-        this.LoadVideos();
+        this.LoadCarousel();
         
     }
-   
+
     deleteS3Object = (key) => {
         const $this = this;
         var dialogOutput = window.confirm("Are you sure?");
@@ -110,7 +96,7 @@ class Video extends Component {
                     return alert("There was an error deleting your photo: ", err.message);
                 }
                 //alert("Successfully deleted photo.");
-                $this.LoadVideos();
+                $this.LoadCarousel();
             });
         }
         else {
@@ -120,11 +106,11 @@ class Video extends Component {
 
     render() {
         return (
-            <div>
+            <div key={this.state.license}>
                 <div className="col-sm-3">
                 <div className="input-group mb-3">
                         <input onChange={this.onFileChange} type="file" className="form-control" aria-label="Upload"/>
-                        <button onClick={this.uploadVideo} className="btn btn-outline-secondary" type="button">Upload</button>
+                        <button onClick={this.uploadCarousel} className="btn btn-outline-secondary" type="button">Upload</button>
                 </div>
                 </div>
                 
@@ -133,7 +119,7 @@ class Video extends Component {
                     {this.state.brochures.map(url => 
                     
                     <div key={url.key} className='col-sm-2'>
-                        <div className="img-fluid" style={{height:165}}>{this.RenderImage(url.url)}</div>
+                        <img className="img-fluid" src={url.url} />
                         <button type="button" className="btn btn-danger" onClick={this.deleteS3Object.bind(this, url.key)}>DELETE</button>
                     </div>
                     )}
@@ -143,4 +129,4 @@ class Video extends Component {
     }
 }
 
-export default Video
+export default Carousel
