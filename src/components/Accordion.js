@@ -76,10 +76,10 @@ render() {
 
             <h6 className="mt-3 mb-3">Presentation 1</h6>
 
-            <Brochure number="1" />
+            <Brochure number="1" userSession={this.props.userSession} />
             <h6 className="mt-3 mb-3">Presentation 2</h6>
 
-            <Brochure number="2" />
+            <Brochure number="2" userSession={this.props.userSession} />
 
           </div>
 
@@ -97,7 +97,7 @@ render() {
           <div className="accordion-body">
             <p className="fs-3">Upload your company logo. Accepted formats (jpg,png)</p>
 
-            <Logo />
+            <Logo userSession={this.props.userSession}/>
           </div>
         </div>
 

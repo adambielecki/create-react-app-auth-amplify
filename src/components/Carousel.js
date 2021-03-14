@@ -32,7 +32,7 @@ class Carousel extends Component {
                 return;
             }
 
-            var filePath = awsConstants.cmsInfo.companyId + '/Carousel/' + fileName;
+            var filePath = $this.state.companyId + '/Carousel/' + fileName;
 
             awsConstants.s3.upload({
                 Key: filePath,

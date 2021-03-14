@@ -24,7 +24,7 @@ class Logo extends Component {
 
             var lastIndex = fileName.lastIndexOf(".");
             var extension = fileName.substring(lastIndex, fileName.length);
-            var filePath = awsConstants.cmsInfo.companyId + '/Logo/logo' + extension;
+            var filePath = $this.state.companyId + '/Logo/logo' + extension;
 
             awsConstants.s3.upload({
                 Key: filePath,
@@ -67,7 +67,7 @@ class Logo extends Component {
 
     LoadLogo = () => {
         const $this = this;
-        const folderPath = awsConstants.cmsInfo.companyId + "/Logo/";
+        const folderPath = $this.state.companyId + "/Logo/";
         awsConstants.s3.listObjects({ Prefix: folderPath }, function (err, data) {
             if (err) {
                 return alert("There was an error viewing your album: " + err.message);

@@ -10,7 +10,8 @@ class Brochure extends Component {
         this.state = {
             brochures: [],
             brochureNumber: props.number,
-            selectedFile: null
+            selectedFile: null,
+            companyId: props.userSession.licenses[0]
         };
 
         
@@ -26,7 +27,7 @@ class Brochure extends Component {
 
             var file = this.state.selectedFile;
             var fileName = file.name;
-            var filePath = awsConstants.cmsInfo.companyId + '/Brochures/' + $this.state.brochureNumber + "/" + fileName;
+            var filePath = $this.state.companyId + '/Brochures/' + $this.state.brochureNumber + "/" + fileName;
 
             awsConstants.s3.upload({
                 Key: filePath,
@@ -68,9 +69,8 @@ class Brochure extends Component {
     }
 
     LoadBrochures = () => {
-        console.log("Called from brochure " + awsConstants.cmsInfo.companyId);
         const $this = this;
-        awsConstants.s3.listObjects({ Prefix: awsConstants.cmsInfo.companyId + "/Brochures/" + $this.state.brochureNumber + "/" }, function (err, data) {
+        awsConstants.s3.listObjects({ Prefix: $this.state.companyId + "/Brochures/" + $this.state.brochureNumber + "/" }, function (err, data) {
             if (err) {
                 return alert("There was an error viewing your album: " + err.message);
             }
@@ -80,7 +80,7 @@ class Brochure extends Component {
 
             var urls = [];
             data.Contents.map(function (photo) {
-                var mainFolderPath = awsConstants.cmsInfo.companyId + "/Brochures/";
+                var mainFolderPath = $this.state.companyId + "/Brochures/";
                 var photoKey = photo.Key;
                 var photoUrl = bucketUrl + encodeURIComponent(photoKey);
 
