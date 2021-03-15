@@ -22,6 +22,8 @@ class Accordion extends Component {
     this.state = {
         
     };
+
+    console.log(props)
     
 }
 
@@ -38,9 +40,9 @@ render() {
         <div id="collapseOne" className="accordion-collapse collapse" aria-labelledby="headingOne"
           data-bs-parent="#accordionExample">
           <div className="accordion-body">
-            <p className="fs-3">Please add image in jpg format. Recommended ratio 16:9.</p>
+            <p className="fs-3">Please add image in jpg format. Recommended ratio 16:9. You can upload up to {this.props.cmsInfo.cms.carouselImagesMax} images.</p>
          
-            <Carousel userSession={this.props.userSession}/>
+            <Carousel userSession={this.props.userSession} carouselImagesMax={this.props.cmsInfo.cms.carouselImagesMax}/>
           </div>
         </div>
 

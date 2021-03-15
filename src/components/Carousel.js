@@ -10,10 +10,11 @@ class Carousel extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            brochures: [],
+            images: [],
             brochureNumber: props.number,
             selectedFile: null,
-            companyId: props.userSession.licenses[0]
+            companyId: props.userSession.licenses[0],
+            carouselImagesMax: props.carouselImagesMax
         };
     }
 
@@ -22,6 +23,12 @@ class Carousel extends Component {
     }
 
     uploadCarousel = () => {
+
+        if(this.state.images.length >= this.state.carouselImagesMax) {
+            alert("You exceeded your upload limit.");
+            return;
+        }
+
         if (this.state.selectedFile) {
             const $this = this;
             const fileName = this.state.selectedFile.name;
@@ -68,6 +75,7 @@ class Carousel extends Component {
 
             var urls = [];
             data.Contents.map(function (photo) {
+
                 var photoKey = photo.Key;
                 var photoUrl = bucketUrl + encodeURIComponent(photoKey);
 
@@ -77,7 +85,7 @@ class Carousel extends Component {
 
                 urls.push({ key: photoKey, url: photoUrl });
             });
-            $this.setState({ brochures: urls.map(url => url) });
+            $this.setState({ images: urls.map(url => url) });
         });
     }
 
@@ -116,7 +124,7 @@ class Carousel extends Component {
                 
                 <div className="row">
 
-                    {this.state.brochures.map(url => 
+                    {this.state.images.map(url => 
                     
                     <div key={url.key} className='col-sm-2'>
                         <img className="img-fluid" src={url.url} />
