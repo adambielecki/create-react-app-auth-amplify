@@ -11,10 +11,9 @@ class Brochure extends Component {
             brochures: [],
             brochureNumber: props.number,
             selectedFile: null,
-            companyId: props.userSession.licenses[0]
+            companyId: props.userSession.licenses[0],
+            presentationImagesMax: props.presentationImagesMax
         };
-
-        
     }
 
     onFileChange = ev => {
@@ -22,6 +21,11 @@ class Brochure extends Component {
     }
 
     uploadBrochure = () => {
+        if(this.state.brochures.length >= this.state.presentationImagesMax) {
+            alert("You exceeded your upload limit.");
+            return;
+        }
+
         if (this.state.selectedFile) {
             const $this = this;
 

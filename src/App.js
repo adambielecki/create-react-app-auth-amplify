@@ -5,6 +5,8 @@ import Amplify, { Auth } from 'aws-amplify';
 import aws_exports from './aws-exports';
 import Accordion from './components/Accordion';
 import * as awsConstants from './components/AwsSettings'
+import UserAction from './components/UserAction'
+
 import AWS from 'aws-sdk';
 
 Amplify.configure(aws_exports);
@@ -17,7 +19,7 @@ export function App() {
 
   const [userSession, setSession] = useState();
   const [cmsInfo, setCmsInfo] = useState();
-
+  const [callToActionResults, setCallToAction] = useState();
 
   useEffect(() => {
     var userInfoPromise = Promise.resolve(Auth.currentUserInfo());
@@ -68,6 +70,34 @@ export function App() {
             }
 
           });
+
+          // get user call to action data
+
+          var params =
+          {
+            TableName: "rise_virtual_cta",
+            FilterExpression: 'companyId = :a',
+            ExpressionAttributeValues: {
+              ":a": awsConstants.cmsInfo.companyId
+          }
+          };
+
+          docClient.scan(params, function (err, data) {
+            if (err) {
+              console.error("Error getting rise_virtual_cta cms info" +  err);
+
+            }
+            else {
+              if(data) {
+                console.log("Call to action info results " + JSON.stringify(data.Items));
+                setCallToAction(data.Items);
+              } else {
+                console.log("No results for rise_virtual_cta")
+              }
+            }
+
+          });
+
         }
       });
 
@@ -75,9 +105,11 @@ export function App() {
   }, []);
 
   return (
-    <div >
+    <div className="container">
       {userSession && cmsInfo && <Accordion userSession={userSession} cmsInfo={cmsInfo} />}
 
+      <h2 class="display-5 p-3">User engagement data</h2>
+      {callToActionResults && <UserAction callToActionResults={callToActionResults}/>}
     </div>
 
   );

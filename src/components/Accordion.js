@@ -29,7 +29,9 @@ class Accordion extends Component {
 
 render() {
   return (
-    <div className="accordion" id="accordionExample">
+    <div>
+      <h2 class="display-5 p-3">Setup</h2>
+      <div className="accordion" id="accordionExample">
       <div className="accordion-item">
         <h2 className="accordion-header" id="headingOne">
           <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
@@ -59,7 +61,7 @@ render() {
           <div className="accordion-body">
             <p className="fs-3">Please add video in mp4 format. Recommended ratio 16:9.</p>
 
-            <Video userSession={this.props.userSession}/>
+            <Video userSession={this.props.userSession} />
           </div>
         </div>
 
@@ -74,14 +76,14 @@ render() {
         <div id="collapseThree" className="accordion-collapse collapse" aria-labelledby="presentation-accordion"
           data-bs-parent="#accordionExample">
           <div className="accordion-body">
-            <p className="fs-3">Please add image in jpg format. Recommended ratio 16:9.</p>
+            <p className="fs-3">Please add image in jpg format. Recommended ratio 16:9. You can upload up to {this.props.cmsInfo.cms.presentationImagesMax} images.</p>
 
             <h6 className="mt-3 mb-3">Presentation 1</h6>
 
-            <Brochure number="1" userSession={this.props.userSession} />
+            <Brochure number="1" userSession={this.props.userSession} presentationImagesMax={this.props.cmsInfo.cms.presentationImagesMax} />
             <h6 className="mt-3 mb-3">Presentation 2</h6>
 
-            <Brochure number="2" userSession={this.props.userSession} />
+            <Brochure number="2" userSession={this.props.userSession} presentationImagesMax={this.props.cmsInfo.cms.presentationImagesMax} />
 
           </div>
 
@@ -105,6 +107,9 @@ render() {
 
       </div>
     </div>
+    
+    </div>
+    
   )
 }
   
