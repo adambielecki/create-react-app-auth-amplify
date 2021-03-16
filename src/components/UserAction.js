@@ -1,4 +1,38 @@
 import React, { Component } from 'react'
+import DataTable from 'react-data-table-component'
+
+const columns = [
+    {
+      name: "Requested at",
+      selector: "dateTime",
+      sortable: false
+    },
+    {
+      name: "First name",
+      selector: "firstName",
+      sortable: true
+    },
+    {
+        name: "Last name",
+        selector: "lastName",
+        sortable: true
+      },
+    {
+      name: "E-mail",
+      selector: "email",
+      sortable: true
+    },
+    {
+        name: "Contact date",
+        selector: "contactDate",
+        sortable: true
+    },
+    {
+        name: "Contact time",
+        selector: "contactTime",
+        sortable: true
+    }
+  ];
 
 class UserAction extends Component {
     constructor(props) {
@@ -9,32 +43,14 @@ class UserAction extends Component {
         console.log("User actions " + JSON.stringify(props.callToActionResults));
     }
 
-
     render() {
-        return <table class="table">
-        <thead>
-          <tr>
-            <th scope="col">Requested at</th>
-            <th scope="col">First name</th>
-            <th scope="col">Last name</th>
-            <th scope="col">E-mail</th>
-            <th scope="col">Contact date</th>
-          </tr>
-        </thead>
-        <tbody>
-        {this.props.callToActionResults.map(userAction => 
-          <tr key={userAction.dateTime}>
-            <th>{userAction.dateTime}</th>
-            <td>{userAction.firstName}</td>
-            <td>{userAction.lastName}</td>
-            <td>{userAction.email}</td>
-            <td>{userAction.contactDate} - {userAction.contactTime}</td>
-          </tr>
-        )
-    }
-          
-        </tbody>
-      </table>
+        return <div>
+            <DataTable
+            data={this.props.callToActionResults}
+            columns={columns}
+            />
+            
+      </div>
     }
 }
 
