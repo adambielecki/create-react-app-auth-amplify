@@ -20,6 +20,7 @@ export function App() {
   const [userSession, setSession] = useState();
   const [cmsInfo, setCmsInfo] = useState();
   const [callToActionResults, setCallToAction] = useState();
+  const [userUnityActions, setUserUnityActions] = useState();
 
   useEffect(() => {
     var userInfoPromise = Promise.resolve(Auth.currentUserInfo());
@@ -98,6 +99,32 @@ export function App() {
 
           });
 
+          var params =
+          {
+            TableName: "rise_virtual_unity_actions",
+            FilterExpression: 'companyId = :a',
+            ExpressionAttributeValues: {
+              ":a": awsConstants.cmsInfo.companyId
+          }
+         
+          };
+
+          docClient.scan(params, function (err, data) {
+            if (err) {
+              console.error("Error getting rise_virtual_unity_actions cms info" +  err);
+
+            }
+            else {
+              if(data) {
+                console.log("Call to action info results " + JSON.stringify(data.Items));
+                setUserUnityActions(data.Items);
+              } else {
+                console.log("No results for rise_virtual_unity_actions")
+              }
+            }
+
+          });
+
         }
       });
 
@@ -109,8 +136,8 @@ export function App() {
       {userSession && cmsInfo && <Accordion userSession={userSession} cmsInfo={cmsInfo} />}
 
       <h2 class="display-5 p-3">User engagement data</h2>
-      <h4 class="display-6 p-3">Speak to a representative</h4>
-      {callToActionResults && <UserAction callToActionResults={callToActionResults}/>}
+      {callToActionResults && userUnityActions && <UserAction callToActionResults={callToActionResults} userUnityActions={userUnityActions}/>}
+
     </div>
 
   );
