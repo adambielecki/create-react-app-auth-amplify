@@ -9,7 +9,8 @@ class Logo extends Component {
         this.state = {
             brochures: [],
             brochureNumber: props.number,
-            selectedFile: null
+            selectedFile: null,
+            companyId: props.userSession.licenses[0]
         };
     }
 
