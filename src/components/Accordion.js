@@ -79,12 +79,16 @@ render() {
             <p className="fs-3">Please add image in jpg format. Recommended ratio 16:9. You can upload up to {this.props.cmsInfo.cms.presentationImagesMax} images.</p>
 
             <h6 className="mt-3 mb-3">Presentation 1</h6>
-
             <Brochure number="1" userSession={this.props.userSession} presentationImagesMax={this.props.cmsInfo.cms.presentationImagesMax} />
-            <h6 className="mt-3 mb-3">Presentation 2</h6>
 
+            <h6 className="mt-3 mb-3">Presentation 2</h6>
             <Brochure number="2" userSession={this.props.userSession} presentationImagesMax={this.props.cmsInfo.cms.presentationImagesMax} />
 
+            <h6 className="mt-3 mb-3">Stand Presentation 1</h6>
+            <Brochure number="3" userSession={this.props.userSession} presentationImagesMax={this.props.cmsInfo.cms.presentationImagesMax} />
+
+            <h6 className="mt-3 mb-3">Stand Presentation 2</h6>
+            <Brochure number="4" userSession={this.props.userSession} presentationImagesMax={this.props.cmsInfo.cms.presentationImagesMax} />
           </div>
 
         </div>
