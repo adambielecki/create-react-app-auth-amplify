@@ -3,16 +3,16 @@ import * as awsConstants from './AwsSettings'
 
 // we will get companyId from user profile in next release
 
-class Carousel extends Component {
+class PresentationHtmlLink extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            images: [],
-            brochureNumber: props.number,
-            selectedFile: null,
+            presentationLink: '',
             companyId: props.userSession.licenses[0],
-            carouselImagesMax: props.carouselImagesMax
         };
+
+        this.handleUrlChange = this.handleUrlChange.bind(this);
+        this.saveHtmlFile = this.saveHtmlFile.bind(this);
     }
 
     onFileChange = ev => {
@@ -21,7 +21,7 @@ class Carousel extends Component {
 
     uploadCarousel = () => {
 
-        if(this.state.images.length >= this.state.carouselImagesMax) {
+        if (this.state.images.length >= this.state.carouselImagesMax) {
             alert("You exceeded your upload limit.");
             return;
         }
@@ -31,7 +31,7 @@ class Carousel extends Component {
             const fileName = this.state.selectedFile.name;
 
             console.log(awsConstants.GetFileExtension(fileName));
-            if(awsConstants.GetFileExtension(fileName) !== ".jpg") {
+            if (awsConstants.GetFileExtension(fileName) !== ".jpg") {
                 alert("Please upload image in jpg format.")
                 return;
             }
@@ -52,7 +52,7 @@ class Carousel extends Component {
                 }
 
             }).on('httpUploadProgress', function (progress) {
-                
+
                 awsConstants.ShowLoading(progress);
                 console.log(progress);
             });
@@ -88,7 +88,7 @@ class Carousel extends Component {
 
     componentDidMount() {
         this.LoadCarousel();
-        
+
     }
 
     deleteS3Object = (key) => {
@@ -109,29 +109,35 @@ class Carousel extends Component {
         }
     }
 
+    loadHtmlUrl = () => {
+        // call aws dynamo to load saved link
+    }
+
+    saveHtmlFile = () => {
+        console.log(this.state.presentationLink);
+        console.log(this.state);
+    }
+
+    handleUrlChange({ target }) {
+        console.log(target);
+        this.setState({
+            [target.name]: target.value
+        });
+    }
+
     render() {
         return (
             <div key={this.state.license}>
                 <div className="col-sm-3">
-                <div className="input-group mb-3">
-                        <input onChange={this.onFileChange} type="file" className="form-control" aria-label="Upload"/>
-                        <button onClick={this.uploadCarousel} className="btn btn-outline-secondary" type="button">Upload</button>
-                </div>
-                </div>
-                
-                <div className="row">
-
-                    {this.state.images.map(url => 
-                    
-                    <div key={url.key} className='col-sm-2'>
-                        <img className="img-fluid" src={url.url} />
-                        <button type="button" className="btn btn-danger" onClick={this.deleteS3Object.bind(this, url.key)}>DELETE</button>
+                    <div className="input-group mb-3">
+                        <input type="text" name="presentationLink" value={this.state.presentationLink} onChange={this.handleUrlChange} className="form-control" aria-label="Upload" />
+                        <button onClick={this.saveHtmlFile} className="btn btn-outline-secondary" type="button">Save</button>
                     </div>
-                    )}
                 </div>
+
             </div>
         )
     }
 }
 
-export default Carousel
+export default PresentationHtmlLink

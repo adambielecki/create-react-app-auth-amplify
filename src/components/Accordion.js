@@ -3,6 +3,7 @@ import Brochure from './Brochure'
 import Logo from './Logo'
 import Video from './Videos'
 import Carousel from './Carousel'
+import PresentationHtmlLink from './PresentationHtmlLink'
 import * as awsConstants from './AwsSettings'
 
 // get image data
@@ -106,6 +107,24 @@ render() {
             <p className="fs-3">Upload your company logo. Accepted formats (jpg,png)</p>
 
             <Logo userSession={this.props.userSession}/>
+          </div>
+        </div>
+
+      </div>
+
+      <div className="accordion-item">
+        <h2 className="accordion-header" id="html-presentation-accordion">
+          <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#html-presentation"
+            aria-expanded="false" aria-controls="html-presentation">
+            Html Presentation
+          </button>
+        </h2>
+        <div id="html-presentation" className="accordion-collapse collapse" aria-labelledby="html-presentation-accordion"
+          data-bs-parent="#accordionExample">
+          <div className="accordion-body">
+            <p className="fs-3">Paste link to your html presentation that is hosted on another platform and publicly available.</p>
+
+            <PresentationHtmlLink userSession={this.props.userSession}/>
           </div>
         </div>
 
