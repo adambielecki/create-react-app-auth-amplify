@@ -21,6 +21,7 @@ export const s3 = new AWS.S3({
     params: { Bucket: bucketName }
 });
 
+export const rise_virtual_license_dynamo = new AWS.DynamoDB.DocumentClient();
 
 // we will get companyId from user profile in next release
 

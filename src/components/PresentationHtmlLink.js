@@ -87,7 +87,8 @@ class PresentationHtmlLink extends Component {
     }
 
     componentDidMount() {
-        this.LoadCarousel();
+        //this.LoadCarousel();
+        this.loadHtmlUrl();
 
     }
 
@@ -111,11 +112,59 @@ class PresentationHtmlLink extends Component {
 
     loadHtmlUrl = () => {
         // call aws dynamo to load saved link
+        var $this = this;
+        var params =
+            {
+                TableName: "rise_virtual_cms_info",
+                Key:
+                {
+                    "companyId": this.state.companyId,
+                }
+            };
+
+            var docClient = awsConstants.rise_virtual_license_dynamo;
+
+            var returnStr = "Error";
+            docClient.get(params, function (err, data) {
+                if (err) {
+                    returnStr = "Error:" + JSON.stringify(err, undefined, 2);
+                    console.error(returnStr);
+                }
+                else {
+                    returnStr = "Link retrieved: " + JSON.stringify(data, undefined, 2);
+                    console.log(returnStr);
+
+                    $this.setState({
+                        "presentationLink": data.Item.presentationLink
+                    });
+                }
+            });
     }
 
     saveHtmlFile = () => {
         console.log(this.state.presentationLink);
         console.log(this.state);
+
+        var params =
+            {
+                TableName: "rise_virtual_cms_info",
+                Item:
+                {
+                    "companyId": this.state.companyId,
+                    "presentationLink" : this.state.presentationLink
+                }
+            };
+            
+            var docClient = awsConstants.rise_virtual_license_dynamo;
+            var returnStr = "Error";
+            docClient.put(params, function (err, data) {
+                if (err) {
+                    returnStr = "Error: " + JSON.stringify(err, undefined, 2);
+                }
+                else {
+                    console.log("Uploaded presentation html link.");
+                }
+            });
     }
 
     handleUrlChange({ target }) {
@@ -128,7 +177,7 @@ class PresentationHtmlLink extends Component {
     render() {
         return (
             <div key={this.state.license}>
-                <div className="col-sm-3">
+                <div className="col-sm-6">
                     <div className="input-group mb-3">
                         <input type="text" name="presentationLink" value={this.state.presentationLink} onChange={this.handleUrlChange} className="form-control" aria-label="Upload" />
                         <button onClick={this.saveHtmlFile} className="btn btn-outline-secondary" type="button">Save</button>
