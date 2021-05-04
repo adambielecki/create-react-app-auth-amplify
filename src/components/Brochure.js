@@ -9,10 +9,8 @@ class Brochure extends Component {
         super(props);
         this.state = {
             brochures: [],
-            brochureNumber: props.number,
             selectedFile: null,
-            companyId: props.userSession.licenses[0],
-            presentationImagesMax: props.presentationImagesMax
+            companyId: props.userSession.licenses[0]
         };
     }
 
@@ -21,17 +19,24 @@ class Brochure extends Component {
     }
 
     uploadBrochure = () => {
-        if(this.state.brochures.length >= this.state.presentationImagesMax) {
-            alert("You exceeded your upload limit.");
-            return;
-        }
-
+        
         if (this.state.selectedFile) {
             const $this = this;
 
+            const fileName = this.state.selectedFile.name;
+
+            var lastIndex = fileName.lastIndexOf(".");
+            var extension = fileName.substring(lastIndex, fileName.length);
+
+            if(extension != ".pdf") {
+                alert("Please upload brochure in pdf format");
+                return;
+            }
+
+            var filePath = $this.state.companyId + '/BrochuresPDF/brochure' + extension;
+
             var file = this.state.selectedFile;
-            var fileName = file.name;
-            var filePath = $this.state.companyId + '/Brochures/' + $this.state.brochureNumber + "/" + fileName;
+            // var filePath = $this.state.companyId + '/Brochures/' + fileName;
 
             awsConstants.s3.upload({
                 Key: filePath,
@@ -42,7 +47,32 @@ class Brochure extends Component {
                     console.error(JSON.stringify(err));
 
                 } else {
-                    awsConstants.HideLoading()
+                    awsConstants.HideLoading();
+
+                    // add to dynamo db
+
+                    var params =
+                    {
+                        TableName: "rise_virtual_brochure_cms",
+                        Item:
+                        {
+                            "companyId": $this.state.companyId,
+                            "brochureUrl" : filePath,
+                            "documentName" : fileName
+                        }
+                    };
+                    
+                    var docClient = awsConstants.rise_virtual_license_dynamo;
+                    var returnStr = "Error";
+                    docClient.put(params, function (err, data) {
+                        if (err) {
+                            returnStr = "Error: " + JSON.stringify(err, undefined, 2);
+                        }
+                        else {
+                            console.log("Uploaded brochure link.");
+                        }
+                    });
+
                     $this.LoadBrochures();
                 }
 
@@ -63,7 +93,27 @@ class Brochure extends Component {
                 if (err) {
                     return alert("There was an error deleting your photo: ", err.message);
                 }
-                //alert("Successfully deleted photo.");
+                
+                var params =
+                {
+                    TableName: "rise_virtual_brochure_cms",
+                    Item:
+                    {
+                        "companyId": $this.state.companyId,
+                        "brochureUrl" : "",
+                        "documentName" : ""
+                    }
+                };
+                
+                var docClient = awsConstants.rise_virtual_license_dynamo;
+                docClient.put(params, function (err, data) {
+                    if (err) {
+                        console.log("Error" + JSON.stringify(err, undefined, 2));
+                    }
+                    else {
+                        console.log("Deleted brochure link.");
+                    }
+                });
                 $this.LoadBrochures();
             });
         }
@@ -74,7 +124,7 @@ class Brochure extends Component {
 
     LoadBrochures = () => {
         const $this = this;
-        awsConstants.s3.listObjects({ Prefix: $this.state.companyId + "/Brochures/" + $this.state.brochureNumber + "/" }, function (err, data) {
+        awsConstants.s3.listObjects({ Prefix: $this.state.companyId + "/BrochuresPDF/" }, function (err, data) {
             if (err) {
                 return alert("There was an error viewing your album: " + err.message);
             }
@@ -83,8 +133,13 @@ class Brochure extends Component {
             var bucketUrl = href + awsConstants.bucketName + "/";
 
             var urls = [];
+
+            if(data.Contents.length == 0) {
+                $this.setState({ brochures: [] });
+            }
+
             data.Contents.map(function (photo) {
-                var mainFolderPath = $this.state.companyId + "/Brochures/";
+                var mainFolderPath = $this.state.companyId + "/BrochuresPDF/";
                 var photoKey = photo.Key;
                 var photoUrl = bucketUrl + encodeURIComponent(photoKey);
 
@@ -92,9 +147,38 @@ class Brochure extends Component {
                     return;
                 }
 
-                urls.push({ key: photoKey, url: photoUrl });
+                var documentName = "";
+
+                var params =
+                    {
+                        TableName: "rise_virtual_brochure_cms",
+                        Key:
+                        {
+                            "companyId": $this.state.companyId,
+                        }
+                    };
+
+                    var docClient = awsConstants.rise_virtual_license_dynamo;
+
+                    var returnStr = "Error";
+                    docClient.get(params, function (err, data) {
+                        if (err) {
+                            returnStr = "Error:" + JSON.stringify(err, undefined, 2);
+                            console.error(returnStr);
+                        }
+                        else {
+                            returnStr = "BrochureLink retrieved: " + JSON.stringify(data, undefined, 2);
+                            console.log(returnStr);
+
+                            documentName =  data.Item.documentName
+                            urls.push({ key: photoKey, url: documentName });
+                            $this.setState({ brochures: urls.map(url => url) });
+                        }
+                    });
+
+                
             });
-            $this.setState({ brochures: urls.map(url => url) });
+            
         });
     }
 
@@ -114,8 +198,8 @@ class Brochure extends Component {
                 
                 <div className="row">
 
-                    {this.state.brochures.map(url => <div key={url.key} className='col-sm-2'>
-                        <img className="img-fluid" src={url.url} />
+                    {this.state.brochures.map(url => <div key={url.key} className='col-sm-6'>
+                        <span>{url.url} </span>
                         <button type="button" className="btn btn-danger" onClick={this.deleteS3Object.bind(this, url.key)}>DELETE</button>
                     </div>
                     )}

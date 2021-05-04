@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import Presentation from './Presentation'
 import Brochure from './Brochure'
 import Logo from './Logo'
 import Video from './Videos'
@@ -80,20 +81,40 @@ render() {
             <p className="fs-3">Please add image in jpg format. Recommended ratio 16:9. You can upload up to {this.props.cmsInfo.cms.presentationImagesMax} images.</p>
 
             <h6 className="mt-3 mb-3">Presentation 1</h6>
-            <Brochure number="1" userSession={this.props.userSession} presentationImagesMax={this.props.cmsInfo.cms.presentationImagesMax} />
+            <Presentation number="1" userSession={this.props.userSession} presentationImagesMax={this.props.cmsInfo.cms.presentationImagesMax} />
 
             <h6 className="mt-3 mb-3">Presentation 2</h6>
-            <Brochure number="2" userSession={this.props.userSession} presentationImagesMax={this.props.cmsInfo.cms.presentationImagesMax} />
+            <Presentation number="2" userSession={this.props.userSession} presentationImagesMax={this.props.cmsInfo.cms.presentationImagesMax} />
 
             <h6 className="mt-3 mb-3">Stand Presentation 1</h6>
-            <Brochure number="3" userSession={this.props.userSession} presentationImagesMax={this.props.cmsInfo.cms.presentationImagesMax} />
+            <Presentation number="3" userSession={this.props.userSession} presentationImagesMax={this.props.cmsInfo.cms.presentationImagesMax} />
 
             <h6 className="mt-3 mb-3">Stand Presentation 2</h6>
-            <Brochure number="4" userSession={this.props.userSession} presentationImagesMax={this.props.cmsInfo.cms.presentationImagesMax} />
+            <Presentation number="4" userSession={this.props.userSession} presentationImagesMax={this.props.cmsInfo.cms.presentationImagesMax} />
           </div>
 
         </div>
       </div>
+
+      <div className="accordion-item">
+        <h2 className="accordion-header" id="brochure-accordion">
+          <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#brochure_accordion"
+            aria-expanded="false" aria-controls="brochure_accordion">
+            Upload brochure
+          </button>
+        </h2>
+        <div id="brochure_accordion" className="accordion-collapse collapse" aria-labelledby="brochure-accordion"
+          data-bs-parent="#accordionExample">
+          <div className="accordion-body">
+            <p className="fs-3">Please add brochure in pdf format.</p>
+
+            <h6 className="mt-3 mb-3">Brochure</h6>
+            <Brochure userSession={this.props.userSession} />
+          </div>
+
+        </div>
+      </div>
+
       <div className="accordion-item">
         <h2 className="accordion-header" id="logo-accordion">
           <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#logo"
