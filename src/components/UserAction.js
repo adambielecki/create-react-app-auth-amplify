@@ -106,14 +106,14 @@ class UserAction extends Component {
 
             <Pie data={this.state.chartData} />
 
-            <h4 class="display-6 p-3">Speak to a representative</h4>
+            <h4 className="display-6 p-3">Speak to a representative</h4>
 
             <DataTable
                 data={this.props.callToActionResults}
                 columns={columns}
                 pagination={true}
             />
-            <h4 class="display-6 p-3">Other actions</h4>
+            <h4 className="display-6 p-3">Other actions</h4>
 
             <DataTable
                 data={this.props.userUnityActions}

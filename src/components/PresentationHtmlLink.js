@@ -134,9 +134,11 @@ class PresentationHtmlLink extends Component {
                     returnStr = "Link retrieved: " + JSON.stringify(data, undefined, 2);
                     console.log(returnStr);
 
-                    $this.setState({
-                        "presentationLink": data.Item.presentationLink
-                    });
+                    if(data.Item) {
+                        $this.setState({
+                            "presentationLink": data.Item.presentationLink
+                        });
+                    }
                 }
             });
     }

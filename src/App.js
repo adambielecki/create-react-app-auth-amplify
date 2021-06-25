@@ -67,7 +67,7 @@ export function App() {
             }
             else {
               setCmsInfo(data.Item);
-              console.log("Cms info results " + JSON.stringify(data.Item.cms));
+              console.log("Cms info results " + JSON.stringify(data.Item));
             }
 
           });
@@ -135,7 +135,7 @@ export function App() {
     <div className="container">
       {userSession && cmsInfo && <Accordion userSession={userSession} cmsInfo={cmsInfo} />}
 
-      <h2 class="display-5 p-3">User engagement data</h2>
+      <h2 className="display-5 p-3">User engagement data</h2>
       {callToActionResults && userUnityActions && <UserAction callToActionResults={callToActionResults} userUnityActions={userUnityActions}/>}
 
     </div>

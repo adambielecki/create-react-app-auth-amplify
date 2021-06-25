@@ -32,7 +32,7 @@ class Accordion extends Component {
 render() {
   return (
     <div>
-      <h2 class="display-5 p-3">Setup</h2>
+      <h2 className="display-5 p-3">Setup</h2>
       <div className="accordion" id="accordionExample">
       <div className="accordion-item">
         <h2 className="accordion-header" id="headingOne">
