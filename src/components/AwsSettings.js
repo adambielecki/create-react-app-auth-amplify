@@ -58,5 +58,5 @@ export function HideLoading() {
 
 export function GetFileExtension(fileName) {
     var lastIndex = fileName.lastIndexOf(".");
-    return fileName.substring(lastIndex, fileName.length);
+    return fileName.substring(lastIndex, fileName.length).toLowerCase();
 }
